@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Trash2, Download, Edit, X, CheckSquare } from "lucide-react"
+import { Checkbox } from "../ui/checkbox"
 
 interface BulkActionsToolbarProps {
   selectedCount: number
@@ -19,7 +20,6 @@ export function BulkActionsToolbar({
   selectedCount,
   totalCount,
   onSelectAll,
-  onClearSelection,
   onBulkDelete,
   onBulkEdit,
   onExport,
@@ -36,13 +36,12 @@ export function BulkActionsToolbar({
         <div className="flex items-center gap-1">
           {selectedCount < totalCount && (
             <Button variant="ghost" size="sm" onClick={onSelectAll}>
-              <CheckSquare className="h-4 w-4 mr-2" />
-              Select All
+              <Checkbox  id="select-all" />
+              <label htmlFor="select-all" className="ml-2 text-sm font-medium">Select All</label>
             </Button>
           )}
         </div>
       </div>
-
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={onBulkEdit}>
           <Edit className="h-4 w-4 mr-2" />
@@ -56,10 +55,10 @@ export function BulkActionsToolbar({
 
         <Separator orientation="vertical" className="h-6" />
 
-        <Button variant="destructive" size="sm" onClick={onBulkDelete}>
+        {/* <Button variant="destructive" size="sm" onClick={onBulkDelete}>
           <Trash2 className="h-4 w-4 mr-2" />
           Delete Selected
-        </Button>
+        </Button> */}
       </div>
     </div>
   )
