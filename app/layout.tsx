@@ -3,6 +3,8 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import ClientRootLayout from "./clientLayout"
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -13,10 +15,15 @@ export const metadata: Metadata = {
   generator: "v0.dev",
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return <ClientRootLayout>{children}</ClientRootLayout>
+export default function RootLayout({ children,}: { children: React.ReactNode }) {
+  return 
+    <>
+      <ClientRootLayout>
+        {children}
+      </ClientRootLayout>
+
+      {/* VERCEL */}
+      <Analytics />
+      <SpeedInsights />
+    </>
 }
