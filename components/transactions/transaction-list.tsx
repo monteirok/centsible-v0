@@ -235,26 +235,6 @@ export function TransactionList() {
             onBulkEdit={handleBulkEdit}
             onExport={handleExportSelected}
           />
-          {/* Bulk Selection Header */}
-          <div className="flex items-center gap-3 p-3 border-b mb-4">
-            <Checkbox
-              checked={selectedTransactionIds.length === transactions.length && transactions.length > 0}
-              onCheckedChange={handleSelectAll}
-              ref={(el) => {
-                if (el) {
-                  el.indeterminate =
-                    selectedTransactionIds.length > 0 && selectedTransactionIds.length < transactions.length
-                }
-              }}
-            />
-            <span className="text-sm font-medium">
-              {selectedTransactionIds.length === 0
-                ? "Select all transactions"
-                : selectedTransactionIds.length === transactions.length
-                  ? "All transactions selected"
-                  : `${selectedTransactionIds.length} of ${transactions.length} selected`}
-            </span>
-          </div>
 
           <div className="space-y-4">
             {transactions.map((transaction) => (

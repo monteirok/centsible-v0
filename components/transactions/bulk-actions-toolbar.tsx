@@ -40,11 +40,6 @@ export function BulkActionsToolbar({
               Select All
             </Button>
           )}
-
-          <Button variant="ghost" size="sm" onClick={onClearSelection}>
-            <X className="h-4 w-4 mr-2" />
-            Clear Selection
-          </Button>
         </div>
       </div>
 
