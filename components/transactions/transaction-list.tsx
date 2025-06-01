@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Edit, Trash2, MoreHorizontal } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import {
@@ -21,6 +20,8 @@ import { useToast } from "@/hooks/use-toast"
 import { Checkbox } from "@/components/ui/checkbox"
 import { BulkActionsToolbar } from "./bulk-actions-toolbar"
 import { BulkEditDialog } from "./bulk-edit-dialog"
+import { AnimatedList, AnimatedListItem, AnimatedButton } from "@/components/ui/animated-components"
+import { motion } from "framer-motion"
 
 interface Transaction {
   id: string
@@ -210,98 +211,97 @@ export function TransactionList() {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>All Transactions</CardTitle>
-            {selectedTransactionIds.length > 0 && (
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">{selectedTransactionIds.length} selected</Badge>
-                <Button variant="destructive" size="sm" onClick={() => setDeletingTransactionId("bulk")}>
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Selected
-                </Button>
-              </div>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <BulkActionsToolbar
-            selectedCount={selectedTransactionIds.length}
-            totalCount={transactions.length}
-            onSelectAll={handleSelectAll}
-            onClearSelection={handleClearSelection}
-            onBulkDelete={() => setDeletingTransactionId("bulk")}
-            onBulkEdit={handleBulkEdit}
-            onExport={handleExportSelected}
-          />
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>All Transactions</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <BulkActionsToolbar
+              selectedCount={selectedTransactionIds.length}
+              totalCount={transactions.length}
+              onSelectAll={handleSelectAll}
+              onClearSelection={handleClearSelection}
+              onBulkDelete={() => setDeletingTransactionId("bulk")}
+              onBulkEdit={handleBulkEdit}
+              onExport={handleExportSelected}
+            />
 
-          <div className="space-y-4">
-            {transactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                className={`flex items-center gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors ${
-                  selectedTransactionIds.includes(transaction.id) ? "bg-muted/30 border-primary" : ""
-                }`}
-              >
-                <Checkbox
-                  checked={selectedTransactionIds.includes(transaction.id)}
-                  onCheckedChange={() => handleSelectTransaction(transaction.id)}
-                />
-
-                <div className="flex flex-col space-y-1 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium">{transaction.description}</p>
-                    {transaction.notes && (
-                      <Badge variant="outline" className="text-xs">
-                        Note
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">{transaction.merchant}</p>
-                  <p className="text-xs text-muted-foreground">{transaction.date}</p>
-                  {transaction.notes && <p className="text-xs text-muted-foreground italic">{transaction.notes}</p>}
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <Badge variant="secondary">{transaction.category}</Badge>
-                  <span
-                    className={`text-sm font-medium min-w-[80px] text-right ${
-                      transaction.type === "income" ? "text-green-600" : "text-red-600"
+            <AnimatedList className="space-y-4">
+              {transactions.map((transaction) => (
+                <AnimatedListItem key={transaction.id}>
+                  <motion.div
+                    className={`flex items-center gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors ${
+                      selectedTransactionIds.includes(transaction.id) ? "bg-muted/30 border-primary" : ""
                     }`}
+                    whileHover={{ scale: 1.01 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   >
-                    {transaction.type === "income" ? "+" : ""}${Math.abs(transaction.amount).toFixed(2)}
-                  </span>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(transaction)}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDuplicate(transaction)}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Duplicate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleDelete(transaction.id)}
-                        className="text-red-600 focus:text-red-600"
+                    <Checkbox
+                      checked={selectedTransactionIds.includes(transaction.id)}
+                      onCheckedChange={() => handleSelectTransaction(transaction.id)}
+                    />
+
+                    <div className="flex flex-col space-y-1 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium">{transaction.description}</p>
+                        {transaction.notes && (
+                          <Badge variant="outline" className="text-xs">
+                            Note
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{transaction.merchant}</p>
+                      <p className="text-xs text-muted-foreground">{transaction.date}</p>
+                      {transaction.notes && <p className="text-xs text-muted-foreground italic">{transaction.notes}</p>}
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <Badge variant="secondary">{transaction.category}</Badge>
+                      <motion.span
+                        className={`text-sm font-medium min-w-[80px] text-right ${
+                          transaction.type === "income" ? "text-green-600" : "text-red-600"
+                        }`}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
                       >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+                        {transaction.type === "income" ? "+" : ""}${Math.abs(transaction.amount).toFixed(2)}
+                      </motion.span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <AnimatedButton variant="ghost" size="sm">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </AnimatedButton>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleEdit(transaction)}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDuplicate(transaction)}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Duplicate
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(transaction.id)}
+                            className="text-red-600 focus:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </motion.div>
+                </AnimatedListItem>
+              ))}
+            </AnimatedList>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Edit Transaction Dialog */}
       {editingTransaction && (

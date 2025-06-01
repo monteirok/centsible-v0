@@ -1,5 +1,9 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DollarSign, TrendingUp, TrendingDown, Target } from "lucide-react"
+import { motion } from "framer-motion"
+import { SlideUp } from "@/components/ui/animated-components"
 
 const stats = [
   {
@@ -35,19 +39,38 @@ const stats = [
 export function DashboardOverview() {
   return (
     <>
-      {stats.map((stat) => (
-        <Card key={stat.title}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-            <stat.icon className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stat.value}</div>
-            <p className={`text-xs ${stat.trend === "up" ? "text-green-600" : "text-red-600"}`}>
-              {stat.change} from last month
-            </p>
-          </CardContent>
-        </Card>
+      {stats.map((stat, index) => (
+        <SlideUp key={stat.title} delay={index * 0.1}>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              <motion.div
+                whileHover={{ rotate: stat.trend === "up" ? 15 : -15, scale: 1.2 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <stat.icon className="h-4 w-4 text-muted-foreground" />
+              </motion.div>
+            </CardHeader>
+            <CardContent>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
+                className="text-2xl font-bold"
+              >
+                {stat.value}
+              </motion.div>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
+                className={`text-xs ${stat.trend === "up" ? "text-green-600" : "text-red-600"}`}
+              >
+                {stat.change} from last month
+              </motion.p>
+            </CardContent>
+          </Card>
+        </SlideUp>
       ))}
     </>
   )

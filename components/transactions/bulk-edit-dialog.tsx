@@ -14,7 +14,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Save } from "lucide-react"
 
@@ -56,12 +55,7 @@ export function BulkEditDialog({ transactions, selectedIds, open, onOpenChange, 
   const [updates, setUpdates] = useState<{
     category?: string
     type?: "income" | "expense"
-    updateCategory: boolean
-    updateType: boolean
-  }>({
-    updateCategory: false,
-    updateType: false,
-  })
+  }>({})
 
   const selectedTransactions = transactions.filter((t) => selectedIds.includes(t.id))
 
@@ -70,11 +64,11 @@ export function BulkEditDialog({ transactions, selectedIds, open, onOpenChange, 
 
     const finalUpdates: Partial<Transaction> = {}
 
-    if (updates.updateCategory && updates.category) {
+    if (updates.category) {
       finalUpdates.category = updates.category
     }
 
-    if (updates.updateType && updates.type) {
+    if (updates.type) {
       finalUpdates.type = updates.type
     }
 
@@ -82,10 +76,7 @@ export function BulkEditDialog({ transactions, selectedIds, open, onOpenChange, 
     onOpenChange(false)
 
     // Reset form
-    setUpdates({
-      updateCategory: false,
-      updateType: false,
-    })
+    setUpdates({})
   }
 
   return (
@@ -117,17 +108,11 @@ export function BulkEditDialog({ transactions, selectedIds, open, onOpenChange, 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
-                <Checkbox
-                  id="update-category"
-                  checked={updates.updateCategory}
-                  onCheckedChange={(checked) => setUpdates((prev) => ({ ...prev, updateCategory: !!checked }))}
-                />
                 <div className="flex-1">
-                  <Label htmlFor="update-category">Update Category</Label>
+                  <Label htmlFor="category">Update Category</Label>
                   <Select
                     value={updates.category || ""}
                     onValueChange={(value) => setUpdates((prev) => ({ ...prev, category: value }))}
-                    disabled={!updates.updateCategory}
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select new category" />
@@ -149,17 +134,11 @@ export function BulkEditDialog({ transactions, selectedIds, open, onOpenChange, 
               </div>
 
               <div className="flex items-center space-x-3">
-                <Checkbox
-                  id="update-type"
-                  checked={updates.updateType}
-                  onCheckedChange={(checked) => setUpdates((prev) => ({ ...prev, updateType: !!checked }))}
-                />
                 <div className="flex-1">
-                  <Label htmlFor="update-type">Update Type</Label>
+                  <Label htmlFor="type">Update Type</Label>
                   <Select
                     value={updates.type || ""}
                     onValueChange={(value) => setUpdates((prev) => ({ ...prev, type: value as "income" | "expense" }))}
-                    disabled={!updates.updateType}
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select new type" />
@@ -177,7 +156,7 @@ export function BulkEditDialog({ transactions, selectedIds, open, onOpenChange, 
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={!updates.updateCategory && !updates.updateType}>
+              <Button type="submit" disabled={!updates.category && !updates.type}>
                 <Save className="mr-2 h-4 w-4" />
                 Update {selectedIds.length} Transaction{selectedIds.length > 1 ? "s" : ""}
               </Button>

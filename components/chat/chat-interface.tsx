@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { Send, Bot, User, Trash2, Download, RefreshCw } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface Message {
   id: string
@@ -279,82 +280,127 @@ What specific aspect of your finances would you like to explore?`
   return (
     <div className="flex flex-col h-full">
       {/* Chat Header */}
-      <div className="border-b p-4">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="border-b p-4"
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
+            >
               <Bot className="h-5 w-5" />
-            </div>
+            </motion.div>
             <div>
               <h2 className="font-semibold">AI Finance Manager</h2>
               <p className="text-sm text-muted-foreground">Your personal financial advisor</p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={exportChat}>
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-            <Button variant="outline" size="sm" onClick={clearChat}>
-              <Trash2 className="h-4 w-4 mr-2" />
-              Clear
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="outline" size="sm" onClick={exportChat}>
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="outline" size="sm" onClick={clearChat}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Clear
+              </Button>
+            </motion.div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Quick Actions */}
-      <div className="border-b p-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="border-b p-4"
+      >
         <h3 className="text-sm font-medium mb-3">Quick Actions</h3>
         <div className="flex flex-wrap gap-2">
-          {quickActions.map((action) => (
-            <Button
+          {quickActions.map((action, index) => (
+            <motion.div
               key={action.id}
-              variant="outline"
-              size="sm"
-              onClick={() => sendMessage(action.prompt)}
-              className="text-xs"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + index * 0.05, type: "spring", stiffness: 400, damping: 25 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <Badge variant="secondary" className="mr-2 text-xs">
-                {action.category}
-              </Badge>
-              {action.label}
-            </Button>
+              <Button variant="outline" size="sm" onClick={() => sendMessage(action.prompt)} className="text-xs">
+                <Badge variant="secondary" className="mr-2 text-xs">
+                  {action.category}
+                </Badge>
+                {action.label}
+              </Button>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Chat Messages */}
       <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
         <div className="space-y-6">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={cn("flex gap-3", message.sender === "user" ? "justify-end" : "justify-start")}
-            >
-              {message.sender === "ai" && (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <Bot className="h-4 w-4" />
-                </div>
-              )}
-              <div
-                className={cn(
-                  "max-w-[80%] rounded-lg px-4 py-3",
-                  message.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted border",
-                )}
+          <AnimatePresence initial={false}>
+            {messages.map((message) => (
+              <motion.div
+                key={message.id}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className={cn("flex gap-3", message.sender === "user" ? "justify-end" : "justify-start")}
               >
-                <div className="text-sm whitespace-pre-wrap">{message.content}</div>
-                <div className="text-xs opacity-70 mt-2">{message.timestamp.toLocaleTimeString()}</div>
-              </div>
-              {message.sender === "user" && (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                  <User className="h-4 w-4" />
-                </div>
-              )}
-            </div>
-          ))}
+                {message.sender === "ai" && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground"
+                  >
+                    <Bot className="h-4 w-4" />
+                  </motion.div>
+                )}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className={cn(
+                    "max-w-[80%] rounded-lg px-4 py-3",
+                    message.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted border",
+                  )}
+                >
+                  <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                  <div className="text-xs opacity-70 mt-2">{message.timestamp.toLocaleTimeString()}</div>
+                </motion.div>
+                {message.sender === "user" && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-muted"
+                  >
+                    <User className="h-4 w-4" />
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
           {isLoading && (
-            <div className="flex gap-3 justify-start">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="flex gap-3 justify-start"
+            >
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <Bot className="h-4 w-4" />
               </div>
@@ -364,13 +410,18 @@ What specific aspect of your finances would you like to explore?`
                   <span className="text-sm">Analyzing your financial data...</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
       </ScrollArea>
 
       {/* Chat Input */}
-      <div className="border-t p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+        className="border-t p-4"
+      >
         <div className="flex gap-3">
           <Input
             ref={inputRef}
@@ -381,12 +432,14 @@ What specific aspect of your finances would you like to explore?`
             className="flex-1"
             disabled={isLoading}
           />
-          <Button onClick={() => sendMessage()} disabled={isLoading || !inputValue.trim()}>
-            <Send className="h-4 w-4" />
-          </Button>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button onClick={() => sendMessage()} disabled={isLoading || !inputValue.trim()}>
+              <Send className="h-4 w-4" />
+            </Button>
+          </motion.div>
         </div>
         <p className="text-xs text-muted-foreground mt-2">Press Enter to send, Shift+Enter for new line</p>
-      </div>
+      </motion.div>
     </div>
   )
 }
